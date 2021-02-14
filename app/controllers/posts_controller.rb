@@ -1,7 +1,14 @@
 class PostsController < ApplicationController
   def index
-    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, posts.*')
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, posts.*  ')
     render json: { data: @posts }, status: :accepted
+  end
+
+  def show
+    @post = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, posts.*  ').find(params[:id])
+    render json: {
+      post: @post
+    }
   end
 
   def create

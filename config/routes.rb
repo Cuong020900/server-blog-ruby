@@ -3,4 +3,5 @@ Rails.application.routes.draw do
   resources :users, only: [:create]
   resources :posts
   post '/login', to: 'auth#create'
+  get '/user-info', to: 'users#user_info'
 end
