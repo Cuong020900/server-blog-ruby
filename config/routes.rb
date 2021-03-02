@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   resources :posts
   post '/login', to: 'auth#create'
   get '/user-info', to: 'users#user_info'
+  get '/top-trending', to: 'posts#top_trending'
 end
