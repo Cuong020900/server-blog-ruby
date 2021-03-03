@@ -1,12 +1,13 @@
 class PostsController < ApplicationController
-  skip_before_action :authorized, only: [:index, :show]
+  skip_before_action :authorized, only: [:index, :show, :top_trending]
+  before_action :set_post, only: [:update, :destroy]
   def index
-    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, posts.title, posts.id, posts.view')
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.avatar, posts.title, posts.id, posts.view')
     render json: { data: @posts }, status: :accepted
   end
 
   def show
-    @post = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, posts.*  ').order('posts.created_at DESC').find(params[:id])
+    @post = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.avatar, posts.*  ').order('posts.created_at DESC').find(params[:id])
 
     t_post = Post.find(params[:id])
     t_post.update(view: t_post.view + 1)
@@ -25,6 +26,11 @@ class PostsController < ApplicationController
     render json: { data: @posts }, status: :ok
   end
 
+  def my_post
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.avatar, posts.title, posts.id, posts.view').where("posts.cuid = #{@current_user_id}")
+    render json: { data: @posts }, status: :ok
+  end
+
   def create
     @post = Post.new(post_params)
     @post.cuid = @current_user_id
@@ -36,9 +42,33 @@ class PostsController < ApplicationController
     end
   end
 
+  def update
+    if @current_user_id != @post.cuid
+      render json: {message: "Bạn không đủ quyền truy cập"}, status: :forbidden
+    elsif @post.update(post_params)
+      render json: { post: @post }
+    else
+      render json: { message: @post.errors }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @current_user_id != @post.cuid
+      render json: {message: "Bạn không đủ quyền"}, status: :forbidden
+    else
+      @post.destroy
+      render json: {message: "Success"}, status: :ok
+    end
+  end
+
   private
+
+  def set_post
+    @post = Post.find(params[:id])
+  end
 
   def post_params
     params.require(:post).permit(:title, :content)
   end
+
 end
