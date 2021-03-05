@@ -2,7 +2,7 @@ class PostsController < ApplicationController
   skip_before_action :authorized, only: [:index, :show, :top_trending]
   before_action :set_post, only: [:update, :destroy]
   def index
-    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.avatar, posts.title, posts.id, posts.view').reverse_order()  
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.name, users.avatar, posts.title, posts.id, posts.view').reverse_order()
     render json: { data: @posts }, status: :accepted
   end
 
