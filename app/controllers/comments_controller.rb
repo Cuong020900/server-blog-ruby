@@ -8,6 +8,9 @@ class CommentsController < ApplicationController
 
   def create
     @comment = Comment.new(create_cmt_params)
+    if (create_cmt_params.key? :pid)
+      @comment.post_id = Comment.find(create_cmt_params[:pid]).post_id
+    end
     @comment.cuid = @current_user_id
     @comment.save!
     if @comment.valid?
