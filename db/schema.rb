@@ -10,7 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_181646) do
+ActiveRecord::Schema.define(version: 2021_03_10_181853) do
+
+  create_table "clips", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "post_id"
+    t.bigint "user_id"
+  end
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.integer "post_id"
@@ -20,6 +25,11 @@ ActiveRecord::Schema.define(version: 2021_03_10_181646) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "pid"
     t.integer "star", default: 5
+  end
+
+  create_table "follower", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "follower_user_id"
+    t.bigint "user_id"
   end
 
   create_table "organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
