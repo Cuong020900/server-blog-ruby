@@ -6,5 +6,6 @@ Rails.application.routes.draw do
   post '/login', to: 'auth#create'
   get '/user-info', to: 'users#user_info'
   get '/top-trending', to: 'posts#top_trending'
+  post '/posts/get-post-by-condition', to: 'posts#post_by_condition'
   get '/my-post', to: 'posts#my_post'
 end

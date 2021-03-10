@@ -6,6 +6,15 @@ class PostsController < ApplicationController
     render json: { data: @posts }, status: :accepted
   end
 
+  def post_by_condition
+    condition = ""
+    if post_condition[:word]
+      condition += "posts.title LIKE '%#{post_condition[:word]}%' OR posts.content LIKE '%#{post_condition[:word]}%'"
+    end
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').where(condition).select('users.username, users.name, users.avatar, posts.title, posts.id, posts.view').reverse_order()
+    render json: { data: @posts }, status: :accepted
+  end
+
   def show
     @post = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN series_posts on series_posts.id = posts.series_post_id').select('users.username, users.avatar, posts.*, series_posts.*').order('posts.created_at DESC').find(params[:id])
 
@@ -62,6 +71,10 @@ class PostsController < ApplicationController
   end
 
   private
+
+  def post_condition
+    params.require(:post).permit(:id, :word, :user_id)
+  end
 
   def set_post
     @post = Post.find(params[:id])
