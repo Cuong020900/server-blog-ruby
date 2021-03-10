@@ -7,7 +7,7 @@ class PostsController < ApplicationController
   end
 
   def show
-    @post = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.avatar, posts.*  ').order('posts.created_at DESC').find(params[:id])
+    @post = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN series_posts on series_posts.id = posts.series_post_id').select('users.username, users.avatar, posts.*, series_posts.*').order('posts.created_at DESC').find(params[:id])
 
     t_post = Post.find(params[:id])
     t_post.update(view: t_post.view + 1)

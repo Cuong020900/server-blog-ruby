@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_08_142658) do
+ActiveRecord::Schema.define(version: 2021_03_10_174450) do
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.integer "post_id"
@@ -22,6 +22,16 @@ ActiveRecord::Schema.define(version: 2021_03_08_142658) do
     t.integer "star", default: 5
   end
 
+  create_table "organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name"
+    t.string "avatar"
+    t.string "address"
+    t.string "description"
+    t.string "page"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "title"
     t.text "content"
@@ -29,10 +39,15 @@ ActiveRecord::Schema.define(version: 2021_03_08_142658) do
     t.integer "cuid"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "view", default: 0
+    t.integer "view", default: 0, null: false
+    t.bigint "series_post_id"
+    t.index ["series_post_id"], name: "fk_rails_0962563364"
   end
 
-  create_table "table_comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "series_posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -45,4 +60,5 @@ ActiveRecord::Schema.define(version: 2021_03_08_142658) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "posts", "series_posts"
 end

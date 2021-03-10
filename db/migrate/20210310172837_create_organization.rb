@@ -6,6 +6,8 @@ class CreateOrganization < ActiveRecord::Migration[6.0]
       t.string :address
       t.string :description
       t.string :page
+
+      t.timestamps
     end
   end
 end
