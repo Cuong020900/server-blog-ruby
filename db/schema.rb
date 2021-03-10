@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_174450) do
+ActiveRecord::Schema.define(version: 2021_03_10_180008) do
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.integer "post_id"
@@ -58,7 +58,10 @@ ActiveRecord::Schema.define(version: 2021_03_10_174450) do
     t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "organization_id"
+    t.index ["organization_id"], name: "fk_rails_d7b9ff90af"
   end
 
   add_foreign_key "posts", "series_posts"
+  add_foreign_key "users", "organizations"
 end
