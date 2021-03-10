@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_180008) do
+ActiveRecord::Schema.define(version: 2021_03_10_181120) do
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.integer "post_id"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2021_03_10_180008) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "view", default: 0, null: false
     t.bigint "series_post_id"
+    t.json "tags"
     t.index ["series_post_id"], name: "fk_rails_0962563364"
   end
 
