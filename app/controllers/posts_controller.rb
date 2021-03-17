@@ -42,7 +42,6 @@ class PostsController < ApplicationController
 
   def create
     @post = Post.new(post_params)
-    @post.tags = params[:tags]
     @post.cuid = @current_user_id
     @post.save!
     if @post.valid?
@@ -82,7 +81,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :content)
+    params.require(:post).permit(:title, :content, :tags => [])
   end
 
 end
