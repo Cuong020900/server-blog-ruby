@@ -49,10 +49,10 @@ ActiveRecord::Schema.define(version: 2021_03_10_181853) do
     t.integer "cuid"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "view", default: 0, null: false
+    t.integer "view", default: 0
     t.bigint "series_post_id"
     t.json "tags"
-    t.integer "type", default: 0
+    t.integer "post_type", default: 0
     t.index ["series_post_id"], name: "fk_rails_0962563364"
   end
 

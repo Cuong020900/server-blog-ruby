@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :comments
   post '/login', to: 'auth#create'
   get '/user-info', to: 'users#user_info'
+  get '/user-info-by-id', to: 'users#user_info_by_id'
   get '/top-trending', to: 'posts#top_trending'
   post '/posts/get-post-by-condition', to: 'posts#post_by_condition'
   get '/my-post', to: 'posts#my_post'

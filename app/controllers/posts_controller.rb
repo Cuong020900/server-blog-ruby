@@ -2,7 +2,7 @@ class PostsController < ApplicationController
   skip_before_action :authorized, only: [:index, :show, :top_trending]
   before_action :set_post, only: [:update, :destroy]
   def index
-    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.name, users.avatar, posts.title, posts.id, posts.view').reverse_order()
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN comments ON posts.id = comments.post_id').group('posts.id').select('users.username, users.name, users.avatar, posts.title, posts.tags, posts.id, posts.view, COUNT(comments.id) as cmt_count').reverse_order()
     render json: { data: @posts }, status: :accepted
   end
 
@@ -11,7 +11,7 @@ class PostsController < ApplicationController
     if post_condition[:word]
       condition += "posts.title LIKE '%#{post_condition[:word]}%' OR posts.content LIKE '%#{post_condition[:word]}%'"
     end
-    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').where(condition).select('users.username, users.name, users.avatar, posts.title, posts.id, posts.view').reverse_order()
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').where(condition).select('users.username, users.name, users.avatar, posts.title, posts.tags, posts.id, posts.view').reverse_order()
     render json: { data: @posts }, status: :accepted
   end
 
@@ -30,18 +30,19 @@ class PostsController < ApplicationController
   end
 
   def top_trending
-    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, posts.title, posts.id, posts.view')
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, posts.title, posts.id, posts.tags, posts.view')
                  .order(view: :desc).limit(10)
     render json: { data: @posts }, status: :ok
   end
 
   def my_post
-    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').select('users.username, users.avatar, posts.title, posts.id, posts.view').where("posts.cuid = #{@current_user_id}")
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN comments ON posts.id = comments.post_id').group('posts.id').select('users.username, users.avatar, posts.title, posts.tags, posts.id, posts.view, COUNT(comments.id) as cmt_count').where("posts.cuid = #{params[:id]}")
     render json: { data: @posts }, status: :ok
   end
 
   def create
     @post = Post.new(post_params)
+    @post.tags = params[:tags]
     @post.cuid = @current_user_id
     @post.save!
     if @post.valid?

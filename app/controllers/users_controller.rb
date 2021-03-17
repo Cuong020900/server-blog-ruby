@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :authorized, only: [:create]
+  skip_before_action :authorized, only: [:create, :user_info_by_id]
 
   def create
     @user = User.create(user_params)
@@ -14,6 +14,11 @@ class UsersController < ApplicationController
 
   def user_info
     render json: { user: @user }, status: 200
+  end
+
+  def user_info_by_id
+    @t_user = User.find(params[:id])
+    render json: { user: @t_user }, status: 200
   end
 
   private
