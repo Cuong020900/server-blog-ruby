@@ -9,4 +9,7 @@ Rails.application.routes.draw do
   get '/top-trending', to: 'posts#top_trending'
   post '/posts/get-post-by-condition', to: 'posts#post_by_condition'
   get '/my-post', to: 'posts#my_post'
+  post '/find-post', to: 'posts#find_post'
+  post '/clip-post', to: 'posts#clip_post'
+  get '/my-clips', to: 'posts#my_clips'
 end

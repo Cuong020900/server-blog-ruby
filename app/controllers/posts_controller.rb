@@ -40,6 +40,22 @@ class PostsController < ApplicationController
     render json: { data: @posts }, status: :ok
   end
 
+  def find_post
+    if find_post_params[:tag] == "" && find_post_params[:content] == ""
+      @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN comments ON posts.id = comments.post_id').group('posts.id').select('users.username, users.name, users.avatar, posts.title, posts.tags, posts.id, posts.view, COUNT(comments.id) as cmt_count').reverse_order()
+    elsif find_post_params[:content] == ""
+      @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN comments ON posts.id = comments.post_id').group('posts.id').select('users.username, users.avatar, posts.title, posts.tags, posts.id, posts.view, COUNT(comments.id) as cmt_count')
+                  .where("JSON_CONTAINS(posts.tags, json_quote('#{find_post_params[:tag]}'), '$')")
+    elsif find_post_params[:tag] == ""
+      @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN comments ON posts.id = comments.post_id').group('posts.id').select('users.username, users.avatar, posts.title, posts.tags, posts.id, posts.view, COUNT(comments.id) as cmt_count')
+      .where("posts.title LIKE '%#{find_post_params[:content]}%'")
+    else
+      @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid').joins('LEFT JOIN comments ON posts.id = comments.post_id').group('posts.id').select('users.username, users.avatar, posts.title, posts.tags, posts.id, posts.view, COUNT(comments.id) as cmt_count')
+      .where("posts.title LIKE '%#{find_post_params[:content]}%' AND JSON_CONTAINS(posts.tags, json_quote('#{find_post_params[:tag]}'), '$')")
+    end                  
+    render json: { data: @posts }, status: :ok
+  end
+
   def create
     @post = Post.new(post_params)
     @post.cuid = @current_user_id
@@ -70,6 +86,27 @@ class PostsController < ApplicationController
     end
   end
 
+  def clip_post
+    @clip = Clip.new(clip_post_params)
+    @clip.user_id = @current_user_id
+    @clip.save!
+    if @clip.valid?
+      render json: { clip: @clip }, status: :accepted
+    else
+      render json: { message: 'Error while save clip' }, status: :internal_server_error
+    end
+  end
+
+  def my_clips
+    @posts = Post.joins('INNER JOIN users ON users.id = posts.cuid')
+    .joins('LEFT JOIN comments ON posts.id = comments.post_id')
+    .joins('INNER JOIN clips ON posts.id = clips.post_id')
+    .where("clips.user_id = #{@current_user_id}")
+    .group('posts.id')
+    .select('users.username, users.name, users.avatar, posts.title, posts.tags, posts.id, posts.view, COUNT(comments.id) as cmt_count').reverse_order()
+    render json: { data: @posts }, status: :accepted
+  end
+
   private
 
   def post_condition
@@ -82,6 +119,14 @@ class PostsController < ApplicationController
 
   def post_params
     params.require(:post).permit(:title, :content, :tags => [])
+  end
+
+  def find_post_params
+    params.require(:post).permit(:content, :tag)
+  end
+
+  def clip_post_params
+    params.require(:post).permit(:post_id)
   end
 
 end
